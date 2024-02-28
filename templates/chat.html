@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropWizard Chat</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #E84A27; /* Set the body background to orange */
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            background-color: #E84A27;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 24px;
+        }
+
+        .title {
+            /* This ensures the title stays on the left */
+            flex-grow: 1;
+        }
+
+        .back-button {
+            /* Styles for the back button to make it appear as text */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            background-color: #13294B;
+            font-size: 18px;
+            padding: 10px 20px;
+            
+        }
+
+        .chat-container {
+            padding: 20px;
+            height: calc(100vh - 160px); /* Adjusted for header and input box */
+            overflow-y: auto;
+            background-color: #f2f2f2; /* Light gray background for contrast */
+        }
+        .message {
+            margin: 5px;
+            padding: 10px;
+            background-color: #e1e1e1; /* Light message background */
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #E84A27;
+            color: #fff;
+            text-align: right;
+        }
+        .chatbot-message {
+            background-color: #e1e1e1;
+            text-align: left;
+        }
+        .input-box {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between; /* Aligns button to the right */
+            border-top: 1px solid #E84A27;
+        }
+        input[type=text] {
+            flex-grow: 1; /* Makes input grow to fill space */
+            margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #E84A27;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #13294B;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #E84A27;
+        }
+
+        /* Styles for chat messages */
+        .chat-container {
+            padding: 10px;
+            height: calc(100vh - 100px); /* Adjust based on your header and input box */
+            overflow-y: auto;
+            background-color: #f0f0f0; /* Light grey background */
+        }
+
+        .message {
+            max-width: 80%;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative;
+            font-size: 16px;
+        }
+
+        .user-message {
+            background-color: #blue; /* Change to match your design */
+            align-self: flex-end;
+            color: white;
+        }
+
+        .bot-message {
+            background-color: #13294B; /* Change to match your design */
+            align-self: flex-start;
+            color: white;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">CropWizard</div>
+        <button onclick="location.href='/'" class="back-button">Back</button>
+    </div>
+    <div class="chat-container" id="chat-container">
+        <!-- Chat messages will appear here -->
+    </div>
+    <div class="input-box">
+        <input type="text" id="user-input" placeholder="Type a message or type '/' to select a prompt...">
+        <button type="submit" id="send-button">Send</button>
+    </div>
+    <script>
+        document.getElementById('send-button').onclick = function(event) {
+            event.preventDefault();
+            var chatContainer = document.getElementById('chat-container');
+            var userInputField = document.getElementById('user-input');
+            var userInput = userInputField.value.trim();
+
+            if (userInput) {
+                // Add the user's message to the screen
+                var userMessageDiv = document.createElement('div');
+                userMessageDiv.classList.add('message', 'user-message');
+                userMessageDiv.textContent = userInput;
+                chatContainer.appendChild(userMessageDiv);
+
+                userInputField.value = ''; // Clear the input field
+                chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+
+                fetch('/ask_cropwizard', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: userInput })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    var botMessageDiv = document.createElement('div');
+                    botMessageDiv.classList.add('message', 'bot-message');
+                    botMessageDiv.textContent = data.response;
+                    chatContainer.appendChild(botMessageDiv);
+                    chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the new message
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    var errorMessageDiv = document.createElement('div');
+                    errorMessageDiv.classList.add('message', 'bot-message');
+                    errorMessageDiv.textContent = 'Hello!';
+                    chatContainer.appendChild(errorMessageDiv);
+                });
+            }
+        };
+    </script>
+</body>
+</html>
