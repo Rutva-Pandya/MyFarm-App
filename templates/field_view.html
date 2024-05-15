@@ -1,9 +1,37 @@
+<!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field View</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACG65QIqgNkwYxUgi5pWFjxuRdisVnTPM&callback=initMap" async defer></script>
+    <style>
+        /* Set the size of the map */
+        #map {
+            height: 500px; /* Adjust height as needed */
+            width: 100%; /* Adjust width as needed */
+        }
+    </style>
+</head>
 <body>
     <h1>Hello, Farm!</h1>
-    <p>Welcome to the MyFARM_App Soil Moisture Data.</p>
+    <p>Welcome to the MyFARM_App Satellite View Map.</p>
     <div>
         <button onclick="location.href='/'">Back</button>
     </div>
+    <!-- Map Div -->
+    <div id="map"></div>
+
+    <!-- Initialize Map Script -->
+    <script>
+        function initMap() {
+            var farmLocation = {lat: 40.1020, lng: -88.2272};
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 8,
+                center: farmLocation,
+                mapTypeId: 'satellite'
+            });
+        }
+    </script>
 </body>
 </html>
