@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropWizard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #E84A27;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #E84A27;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 24px;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #13294B;
+            color: white;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .chat-container {
+            padding: 20px;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-box {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #E84A27;
+        }
+
+        .input-box > input[type="text"] {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #E84A27;
+            border-radius: 5px;
+        }
+
+        .input-box > button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #13294B;
+            color: white;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .input-box > button:hover {
+            background-color: #E84A27;
+        }
+
+        .chat-message {
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin: 5px 0;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+            margin-right: 20px;
+        }
+
+        .wizard-message {
+            background-color: #f8f9fa;
+            color: #333;
+            align-self: flex-start;
+            margin-left: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">CropWizard</div>
+        <button class="back-button" onclick="window.history.back();">&#x2190; Back</button>
+    </div>
+    <div class="chat-container" id="chat-container">
+        <!-- Chat messages will appear here -->
+    </div>
+    <div class="input-box">
+        <input type="text" id="text-input" placeholder="Type a message...">
+        <button onclick="sendQuery()">Send</button>
+    </div>
+    <script>
+        function sendQuery() {
+            const textInput = document.getElementById('text-input');
+            const userMessage = textInput.value.trim();
+
+            if (userMessage === '') {
+                alert('Please enter a message.');
+                return;
+            }
+
+            const chatContainer = document.getElementById('chat-container');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user-message';
+            userMessageDiv.textContent = userMessage;
+            chatContainer.appendChild(userMessageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            fetch('/cropwizard/ask_cropwizard/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `text=${encodeURIComponent(userMessage)}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                const wizardMessageDiv = document.createElement('div');
+                wizardMessageDiv.className = 'chat-message wizard-message';
+                wizardMessageDiv.textContent = data;
+                chatContainer.appendChild(wizardMessageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+            textInput.value = '';
+        }
+    </script>
+</body>
+</html>
