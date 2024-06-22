@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CropWizard</title>
+    <title>MyFarm Powered by CropWizard</title>
     <style>
         body {
             margin: 0;
@@ -55,7 +55,7 @@
             border-top: 1px solid #E84A27;
         }
 
-        .input-box > input[type="text"] {
+        .input-box > input[type="text"], .input-box > input[type="url"] {
             flex-grow: 1;
             margin-right: 10px;
             padding: 10px;
@@ -99,11 +99,21 @@
             margin-left: 20px;
         }
 
+        .image-message {
+            max-width: 150px;
+            max-height: 150px;
+            margin: 5px 0;
+            align-self: flex-end;
+            margin-right: 20px;
+            border-radius: 10px;
+        }
+
     </style>
+    {% load static %}
 </head>
 <body>
     <div class="header">
-        <div class="title">CropWizard</div>
+        <div class="title">MyFarm Powered by CropWizard</div>
         <button class="back-button" onclick="window.history.back();">&#x2190; Back</button>
     </div>
     <div class="chat-container" id="chat-container">
@@ -111,45 +121,61 @@
     </div>
     <div class="input-box">
         <input type="text" id="text-input" placeholder="Type a message...">
+        <input type="url" id="image-url-input" placeholder="Image URL (optional)">
         <button onclick="sendQuery()">Send</button>
     </div>
     <script>
         function sendQuery() {
-            const textInput = document.getElementById('text-input');
-            const userMessage = textInput.value.trim();
+            const textInput = document.getElementById('text-input').value;
+            const imageUrlInput = document.getElementById('image-url-input').value;
+            const chatContainer = document.getElementById('chat-container');
 
-            if (userMessage === '') {
-                alert('Please enter a message.');
+            if (!textInput && !imageUrlInput) {
+                alert("Please enter a message or provide an image URL.");
                 return;
             }
 
-            const chatContainer = document.getElementById('chat-container');
-            const userMessageDiv = document.createElement('div');
-            userMessageDiv.className = 'chat-message user-message';
-            userMessageDiv.textContent = userMessage;
-            chatContainer.appendChild(userMessageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            // Append user message to chat container
+            if (imageUrlInput) {
+                const userImageMessage = document.createElement('img');
+                userImageMessage.className = 'image-message';
+                userImageMessage.src = imageUrlInput;
+                chatContainer.appendChild(userImageMessage);
+            }
+            
+            if (textInput) {
+                const userMessage = document.createElement('div');
+                userMessage.className = 'chat-message user-message';
+                userMessage.textContent = textInput;
+                chatContainer.appendChild(userMessage);
+            }
 
+            // Send AJAX request to server
             fetch('/cropwizard/ask_cropwizard/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
                 },
-                body: `text=${encodeURIComponent(userMessage)}`
+                body: new URLSearchParams({
+                    'text': textInput,
+                    'image_url': imageUrlInput
+                })
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                const wizardMessageDiv = document.createElement('div');
-                wizardMessageDiv.className = 'chat-message wizard-message';
-                wizardMessageDiv.textContent = data;
-                chatContainer.appendChild(wizardMessageDiv);
+                // Append wizard response to chat container
+                const wizardMessage = document.createElement('div');
+                wizardMessage.className = 'chat-message wizard-message';
+                wizardMessage.textContent = data.message;
+                chatContainer.appendChild(wizardMessage);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-
-            textInput.value = '';
+            .catch(error => console.error('Error:', error));
+            
+            // Clear input fields
+            document.getElementById('text-input').value = '';
+            document.getElementById('image-url-input').value = '';
         }
     </script>
 </body>
