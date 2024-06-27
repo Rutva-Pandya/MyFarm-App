@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Home.urls')),
     path('cropwizard/', include('CropWizard.urls')),  # Include CropWizard URLs
+    path('Farm_View/', include('Farm_View.urls')),  # Include Farm_View URLs
 ]

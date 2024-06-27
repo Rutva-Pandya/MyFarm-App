@@ -1,5 +1,6 @@
 import logging
 import requests
+from openai import AzureOpenAI 
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -9,7 +10,13 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 CROPWIZARD_API_KEY = os.getenv('CROPWIZARD_API')
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_API_KEY = os.getenv('AZURE_OPENAI_API_KEY')
+client = AzureOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),  
+    api_version= "2023-12-01-preview",
+    azure_endpoint = "https://gpt-4-uiuc-chat-east-us-2.openai.azure.com/"
+)
+
 
 def chat(request):
     return render(request, 'CropWizard/chat.html')

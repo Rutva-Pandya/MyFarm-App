@@ -1,9 +1,10 @@
-<!-- templates/home.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Welcome to My Farm</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'farm_view/styles.css' %}">
 </head>
 <body>
     <h1>Hello, Farm!</h1>
@@ -12,6 +13,7 @@
         <button onclick="location.href='/soil_moisture'">Soil Moisture Data</button>
         <button onclick="location.href='/images'">Satellite Images</button>
         <button onclick="location.href='/satellite'">Farm Images</button>
+        <button onclick="location.href='{% url 'farm_view_home' %}'">Go to Farm View</button>
         <button onclick="location.href='{% url 'chat' %}'">Go to CropWizard Chat</button>
     </div>
 </body>

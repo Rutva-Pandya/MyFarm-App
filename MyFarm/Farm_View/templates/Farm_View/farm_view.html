@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Collected Images</title>
+    <link rel="stylesheet" href="/Users/rutva/Downloads/UIUC/LLVM/MyFarm-App/MyFarm/Farm_View/static/Farm_View/styles.css">
+    <style>
+        /* CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            margin: 20px 0;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #000;
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        #date-time {
+            margin-right: 20px;
+            padding: 10px;
+            border: 2px solid #000;
+            display: inline-block;
+        }
+
+        #calendar {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #calendar input {
+            border: 1px solid #ccc;
+            padding: 8px;
+            font-size: 1em;
+            margin-top: 250px;
+            margin-left: 30px;
+        }
+
+        #images {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            grid-gap: 10px;
+        }
+
+        .image-grid img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .arrow {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            margin: 0 20px;
+        }
+
+        #options {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 10px;
+            margin-left: 30px;
+        }
+
+        .switches {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .switch {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .switch label {
+            margin-right: 10px;
+        }
+
+        .live-feed {
+            display: flex;
+            align-items: center;
+        }
+
+        .live-feed label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Robot Collected Images</h1>
+        <hr>
+    </header>
+    <main>
+        <section id="controls">
+            <div id="date-time">
+                <p id="current-date"></p>
+                <p id="current-time"></p>
+            </div>
+            <div id="calendar">
+                <input type="date" id="calendar-input">
+                <section id="options">
+                    <h3>Image Type</h3> 
+                    <div class="switches">
+                        <div class="switch">
+                            <span>RGB Center</span>
+                            <input type="checkbox" id="rgb-center">
+                            <label for="rgb-center"></label>
+                        </div>
+                        <div class="switch">
+                            <span>Infrared Left</span>
+                            <input type="checkbox" id="infrared-left">
+                            <label for="infrared-left"></label>
+                        </div>
+                        <div class="switch">
+                            <span>Infrared Right</span>
+                            <input type="checkbox" id="infrared-right">
+                            <label for="infrared-right"></label>
+                        </div>
+                    </div>
+                    <h3>Live Feed</h3> 
+                    <div class="live-feed">
+                        <span>Live Image Feed</span>
+                        <input type="checkbox" id="live-feed">
+                        <label for="live-feed"></label>
+                    </div>
+                </section>
+            </div>
+        </section>
+        <section id="images">
+            <button class="arrow" id="prev">&larr;</button>
+            <div class="image-grid">
+                <img id="left-image-top" src="farm.jpg" alt="Left Image Top">
+                <img id="right-image-top" src="farm.jpg" alt="Right Image Top">
+                <img id="left-image-bottom" src="farm.jpg" alt="Left Image Bottom">
+                <img id="right-image-bottom" src="farm.jpg" alt="Right Image Bottom">
+            </div>
+            <button class="arrow" id="next">&rarr;</button>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const leftToggle = document.getElementById('infrared-left');
+            const rightToggle = document.getElementById('infrared-right');
+            const rgbCenterToggle = document.getElementById('rgb-center');
+            const liveFeedToggle = document.getElementById('live-feed');
+            const calendarInput = document.getElementById('calendar-input');
+
+            const updateImages = (isLeftOn, isRightOn, isRGBOn, isLiveOn) => {
+                let imagePath;
+                if (isLeftOn) {
+                    imagePath = 'farm_left_infra.jpg';
+                } else if (isRightOn) {
+                    imagePath = 'farm_right_infra.jpg';
+                } else if (isRGBOn) {
+                    imagePath = 'farm.jpg';
+                } else if (isLiveOn) {
+                    imagePath = 'farm_live.jpg';
+                }
+
+                document.getElementById('left-image-top').src = imagePath;
+                document.getElementById('right-image-top').src = imagePath;
+                document.getElementById('left-image-bottom').src = imagePath;
+                document.getElementById('right-image-bottom').src = imagePath;
+            };
+
+            const handleToggleChange = (toggle) => {
+                const isLeftOn = toggle === 'left';
+                const isRightOn = toggle === 'right';
+                const isRGBOn = toggle === 'rgb';
+                const isLiveOn = toggle === 'live';
+
+                leftToggle.checked = isLeftOn;
+                rightToggle.checked = isRightOn;
+                rgbCenterToggle.checked = isRGBOn;
+                liveFeedToggle.checked = isLiveOn;
+
+                updateImages(isLeftOn, isRightOn, isRGBOn, isLiveOn);
+            };
+
+            leftToggle.addEventListener('change', () => {
+                if (leftToggle.checked) {
+                    handleToggleChange('left');
+                }
+            });
+
+            rightToggle.addEventListener('change', () => {
+                if (rightToggle.checked) {
+                    handleToggleChange('right');
+                }
+            });
+
+            rgbCenterToggle.addEventListener('change', () => {
+                if (rgbCenterToggle.checked) {
+                    handleToggleChange('rgb');
+                }
+            });
+
+            liveFeedToggle.addEventListener('change', () => {
+                if (liveFeedToggle.checked) {
+                    handleToggleChange('live');
+                }
+            });
+
+            const updateDateTime = () => {
+                const now = new Date();
+                const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
+                const time = now.toTimeString().split(' ')[0]; // HH:MM:SS
+
+                document.getElementById('current-date').textContent = date;
+                document.getElementById('current-time').textContent = time;
+
+                document.getElementById('calendar-input').value = date;
+            };
+
+            // Simulate loading images based on the date
+            const loadImagesByDate = (date) => {
+                console.log(`Loading images for date: ${date}`);
+                // Add the actual image loading logic here
+            };
+
+            calendarInput.addEventListener('change', (event) => {
+                loadImagesByDate(event.target.value);
+            });
+
+            document.getElementById('prev').addEventListener('click', () => {
+                const currentDate = new Date(calendarInput.value);
+                currentDate.setDate(currentDate.getDate() - 1);
+                calendarInput.value = currentDate.toISOString().split('T')[0];
+                loadImagesByDate(calendarInput.value);
+            });
+
+            document.getElementById('next').addEventListener('click', () => {
+                const currentDate = new Date(calendarInput.value);
+                currentDate.setDate(currentDate.getDate() + 1);
+                calendarInput.value = currentDate.toISOString().split('T')[0];
+                loadImagesByDate(calendarInput.value);
+            });
+
+            updateDateTime();
+            handleToggleChange('rgb'); // Set initial images to RGB Center and toggle it on
+        });
+    </script>
+</body>
+
+</html>

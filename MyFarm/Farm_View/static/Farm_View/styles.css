@@ -1,0 +1,175 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    margin: 20px 0;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #000;
+    width: 80%;
+    margin: 0 auto;
+}
+
+#controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+#date-time {
+    margin-right: 20px;
+}
+
+#calendar input {
+    border: 1px solid #ccc;
+    padding: 5px;
+    font-size: 1em;
+}
+
+
+#images {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+
+.image-grid img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.arrow {
+    background: none;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    margin: 0 20px;
+}
+
+#options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.switches {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+.switch input[type="checkbox"] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    position: absolute;
+}
+
+.switch label {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 27px;
+    background-color: grey;
+    border-radius: 34px;
+    cursor: pointer;
+}
+
+.switch label:after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 23px;
+    height: 23px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.switch input:checked + label {
+    background-color: #4caf50;
+}
+
+.switch input:checked + label:after {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+}
+
+.switch label:active:after {
+    width: 28px;
+}
+
+.live-feed {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 200px;
+}
+
+.live-feed input[type="checkbox"] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    position: absolute;
+}
+
+.live-feed label {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 27px;
+    background-color: grey;
+    border-radius: 34px;
+    cursor: pointer;
+}
+
+.live-feed label:after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 23px;
+    height: 23px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.live-feed input:checked + label {
+    background-color: #4caf50;
+}
+
+.live-feed input:checked + label:after {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+}
+
+.live-feed label:active:after {
+    width: 28px;
+}
