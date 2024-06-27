@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robot Collected Images</title>
-    <link rel="stylesheet" href="/Users/rutva/Downloads/UIUC/LLVM/MyFarm-App/MyFarm/Farm_View/static/Farm_View/styles.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'Farm_View/styles.css' %}">
+
     <style>
         /* CSS styles */
         body {
@@ -134,7 +136,7 @@
             <div id="calendar">
                 <input type="date" id="calendar-input">
                 <section id="options">
-                    <h3>Image Type</h3> 
+                    <h3>Image Type</h3>
                     <div class="switches">
                         <div class="switch">
                             <span>RGB Center</span>
@@ -152,7 +154,7 @@
                             <label for="infrared-right"></label>
                         </div>
                     </div>
-                    <h3>Live Feed</h3> 
+                    <h3>Live Feed</h3>
                     <div class="live-feed">
                         <span>Live Image Feed</span>
                         <input type="checkbox" id="live-feed">
@@ -164,10 +166,10 @@
         <section id="images">
             <button class="arrow" id="prev">&larr;</button>
             <div class="image-grid">
-                <img id="left-image-top" src="farm.jpg" alt="Left Image Top">
-                <img id="right-image-top" src="farm.jpg" alt="Right Image Top">
-                <img id="left-image-bottom" src="farm.jpg" alt="Left Image Bottom">
-                <img id="right-image-bottom" src="farm.jpg" alt="Right Image Bottom">
+                <img id="left-image-top" src="{% static 'Farm_View/farm.jpg' %}" alt="Left Image Top">
+                <img id="right-image-top" src="{% static 'Farm_View/farm.jpg' %}" alt="Right Image Top">
+                <img id="left-image-bottom" src="{% static 'Farm_View/farm.jpg' %}" alt="Left Image Bottom">
+                <img id="right-image-bottom" src="{% static 'Farm_View/farm.jpg' %}" alt="Right Image Bottom">
             </div>
             <button class="arrow" id="next">&rarr;</button>
         </section>
@@ -183,13 +185,13 @@
             const updateImages = (isLeftOn, isRightOn, isRGBOn, isLiveOn) => {
                 let imagePath;
                 if (isLeftOn) {
-                    imagePath = 'farm_left_infra.jpg';
+                    imagePath = '{% static 'Farm_View/farm_left_infra.jpg' %}';
                 } else if (isRightOn) {
-                    imagePath = 'farm_right_infra.jpg';
+                    imagePath = '{% static 'Farm_View/farm_right_infra.jpg' %}';
                 } else if (isRGBOn) {
-                    imagePath = 'farm.jpg';
+                    imagePath = '{% static 'Farm_View/farm.jpg' %}';
                 } else if (isLiveOn) {
-                    imagePath = 'farm_live.jpg';
+                    imagePath = '{% static 'Farm_View/farm_live.jpg' %}';
                 }
 
                 document.getElementById('left-image-top').src = imagePath;
