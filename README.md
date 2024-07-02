@@ -29,3 +29,8 @@ This project is hosted on the NCSA AIFarms Cluster and can be accessed by users 
 
 With this, the server should be hosted on [http://127.0.0.1:5001/](http://127.0.0.1:5001/).
 
+## Usage
+
+This app is developed using Django and has multiple sub apps (CropWizard, Farm_View, Home, etc...) that can be individually developed and tested. 
+
+Within each app, the frontend is managed in the static (used for CSS & JavaScript files) and templates (used for HTML files) folders. Any changes made to the interface will be managed in these directories and will automatically be updated on the Django server hosting the MyFarm App.
