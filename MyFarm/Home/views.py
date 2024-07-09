@@ -20,7 +20,7 @@ def satellite_images(request):
     return render(request, 'satelliteImages.html')
 
 def farm_images(request):
-    return render(request, 'farmImages.html')
+    return render(request, 'Farm_View/farm_view.html')
 
 def crop_wizard(request):
-    return render(request, 'cropWizard.html')
+    return render(request, 'CropWizard/chat.html')

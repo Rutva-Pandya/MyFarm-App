@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyFarm</title>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'farm_view/styles.css' %}">
-    <script defer src="{% static 'farm_view/splash.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static '/styles.css' %}">
+    <script defer src="{% static '/splash.js' %}"></script>
 </head>
 <body>
     <div id="splash">
@@ -18,11 +18,11 @@
     </div>
     <div id="main-content" style="display: none;">
         <h1>MyFarm</h1>
-        <p>Welcome to the MyFARM App dashboard. Choose an option below:</p>
+        <p>Welcome to the MyFarm App dashboard. Choose an option below:</p>
         <div class="section">
             <div class="item">
                 <a href="{% url 'sensor_data' %}">
-                    <img src="{% static 'farm_view/images/sensordata.png' %}" alt="Sensor Data">
+                    <img src="{% static 'sensordata.png' %}" alt="Sensor Data">
                     <h3>Sensor Data</h3>
                     <p>last update: 06/28/2024</p>
                     <p>short description</p>
@@ -30,7 +30,7 @@
             </div>
             <div class="item">
                 <a href="{% url 'satellite_images' %}">
-                    <img src="{% static 'farm_view/images/satelliteimages.png' %}" alt="Satellite Images">
+                    <img src="{% static 'satelliteimages.png' %}" alt="Satellite Images">
                     <h3>Satellite Images</h3>
                     <p>last update: 06/28/2024</p>
                     <p>short description</p>
@@ -38,7 +38,7 @@
             </div>
             <div class="item">
                 <a href="{% url 'farm_images' %}">
-                    <img src="{% static 'farm_view/images/farmimages.png' %}" alt="Farm Images">
+                    <img src="{% static 'farmimages.png' %}" alt="Farm Images">
                     <h3>Farm Images</h3>
                     <p>last update: 06/28/2024</p>
                     <p>short description</p>
@@ -46,7 +46,7 @@
             </div>
             <div class="item">
                 <a href="{% url 'crop_wizard' %}">
-                    <img src="{% static 'farm_view/images/cropwizard.png' %}" alt="Crop Wizard">
+                    <img src="{% static 'cropwizard.png' %}" alt="Crop Wizard">
                     <h3>Crop Wizard</h3>
                     <p>Click here to go to Crop Wizard chat.</p>
                 </a>

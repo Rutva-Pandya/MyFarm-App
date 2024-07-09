@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Collected Images</title>
+    <title>Farm Images</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'Farm_View/styles.css' %}">
 
@@ -38,7 +38,7 @@
         #date-time {
             margin-right: 20px;
             padding: 10px;
-            border: 2px solid #000;
+            border: 1.5px solid #000;
             display: inline-block;
         }
 
@@ -124,7 +124,7 @@
 
 <body>
     <header>
-        <h1>Robot Collected Images</h1>
+        <h1>Farm Images</h1>
         <hr>
     </header>
     <main>
@@ -166,10 +166,10 @@
         <section id="images">
             <button class="arrow" id="prev">&larr;</button>
             <div class="image-grid">
-                <img id="left-image-top" src="{% static 'Farm_View/farm.jpg' %}" alt="Left Image Top">
-                <img id="right-image-top" src="{% static 'Farm_View/farm.jpg' %}" alt="Right Image Top">
-                <img id="left-image-bottom" src="{% static 'Farm_View/farm.jpg' %}" alt="Left Image Bottom">
-                <img id="right-image-bottom" src="{% static 'Farm_View/farm.jpg' %}" alt="Right Image Bottom">
+                <img id="left-image-top" src="{% static 'Farm_View/top_left.jpg' %}" alt="Left Image Top">
+                <img id="right-image-top" src="{% static 'Farm_View/top_right.jpg' %}" alt="Right Image Top">
+                <img id="left-image-bottom" src="{% static 'Farm_View/btm_left.jpg' %}" alt="Left Image Bottom">
+                <img id="right-image-bottom" src="{% static 'Farm_View/btm_right.jpg' %}" alt="Right Image Bottom">
             </div>
             <button class="arrow" id="next">&rarr;</button>
         </section>
@@ -185,13 +185,13 @@
             const updateImages = (isLeftOn, isRightOn, isRGBOn, isLiveOn) => {
                 let imagePath;
                 if (isLeftOn) {
-                    imagePath = '{% static 'Farm_View/farm_left_infra.jpg' %}';
+                    imagePath = '{% static '/farm_left_infra.jpg' %}';
                 } else if (isRightOn) {
-                    imagePath = '{% static 'Farm_View/farm_right_infra.jpg' %}';
+                    imagePath = '{% static '/farm_right_infra.jpg' %}';
                 } else if (isRGBOn) {
-                    imagePath = '{% static 'Farm_View/farm.jpg' %}';
+                    imagePath = '{% static '/Farm_View/farm.jpg' %}';
                 } else if (isLiveOn) {
-                    imagePath = '{% static 'Farm_View/farm_live.jpg' %}';
+                    imagePath = '{% static '/Farm_View/farm_live.jpg' %}';
                 }
 
                 document.getElementById('left-image-top').src = imagePath;
