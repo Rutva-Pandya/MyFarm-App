@@ -1,5 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center; 
+    }
+
+    footer .logos {
+        margin-top: -75px;
+        margin-left: auto; 
+        display: flex;
+        align-items: center;
+    }
+
+    footer img {
+        width: 100px;
+        height: auto;
+        margin-right: 15px;
+    }
+
+    footer img[alt="i-FARM logo"] {
+        width: 30px; 
+    }
+
+    footer p{
+        margin-left: 30px;
+        margin-right: 300px;
+        margin-top: 280px;
+    }
+</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,5 +84,13 @@
             </div>
         </div>
     </div>
+    <footer>
+        <p>Supported by the Farm of the Future Program of USDA NIFA under Grant No. 2022-77038-37306, by the AIFARMS National AI Institute under Agriculture and Food Research Initiative (AFRI) grant no. 2020-67021-32799/project accession no.1024178 from USDA NIFA, and by the Center for Digital Agriculture at the University of Illinois at Urbana-Champaign.</p>
+        <div class="logos">
+            <img src="{% static 'AIFarms.png' %}" alt="AIFarms logo">
+            <img src="{% static 'CDA.png' %}" alt="CDA logo">
+            <img src="{% static 'i-FARM.png' %}" alt="i-FARM logo">
+        </div>
+    </footer>
 </body>
 </html>

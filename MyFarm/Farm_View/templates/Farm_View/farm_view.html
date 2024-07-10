@@ -119,12 +119,42 @@
         .live-feed label {
             margin-right: 10px;
         }
+
+        footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center; 
+        }
+
+        footer .logos {
+            margin-top: -75px;
+            margin-left: auto; 
+            display: flex;
+            align-items: center;
+        }
+
+        footer img {
+            width: 100px;
+            height: auto;
+            margin-right: 15px;
+        }
+
+        footer img[alt="i-FARM logo"] {
+            width: 30px; 
+        }
+
+        footer p{
+            margin-left: 30px;
+            margin-right: 300px;
+            margin-top: 55px;
+        }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>Farm Images</h1>
+        <h1>Farm View</h1>
         <hr>
     </header>
     <main>
@@ -165,15 +195,21 @@
         </section>
         <section id="images">
             <button class="arrow" id="prev">&larr;</button>
-            <div class="image-grid">
-                <img id="left-image-top" src="{% static 'Farm_View/top_left.jpg' %}" alt="Left Image Top">
-                <img id="right-image-top" src="{% static 'Farm_View/top_right.jpg' %}" alt="Right Image Top">
-                <img id="left-image-bottom" src="{% static 'Farm_View/btm_left.jpg' %}" alt="Left Image Bottom">
-                <img id="right-image-bottom" src="{% static 'Farm_View/btm_right.jpg' %}" alt="Right Image Bottom">
+            <div class="image-grid" id="image-container">
+                <!-- Images will be dynamically loaded here -->
             </div>
             <button class="arrow" id="next">&rarr;</button>
         </section>
     </main>
+    <footer>
+        <p>Supported by the Farm of the Future Program of USDA NIFA under Grant No. 2022-77038-37306, by the AIFARMS National AI Institute under Agriculture and Food Research Initiative (AFRI) grant no. 2020-67021-32799/project accession no.1024178 from USDA NIFA, and by the Center for Digital Agriculture at the University of Illinois at Urbana-Champaign.</p>
+        <div class="logos">
+            <img src="{% static 'AIFarms.png' %}" alt="AIFarms logo">
+            <img src="{% static 'CDA.png' %}" alt="CDA logo">
+            <img src="{% static 'i-FARM.png' %}" alt="i-FARM logo">
+        </div>
+    </footer>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const leftToggle = document.getElementById('infrared-left');
@@ -181,23 +217,18 @@
             const rgbCenterToggle = document.getElementById('rgb-center');
             const liveFeedToggle = document.getElementById('live-feed');
             const calendarInput = document.getElementById('calendar-input');
+            const imageContainer = document.getElementById('image-container');
 
-            const updateImages = (isLeftOn, isRightOn, isRGBOn, isLiveOn) => {
-                let imagePath;
-                if (isLeftOn) {
-                    imagePath = '{% static '/farm_left_infra.jpg' %}';
-                } else if (isRightOn) {
-                    imagePath = '{% static '/farm_right_infra.jpg' %}';
-                } else if (isRGBOn) {
-                    imagePath = '{% static '/Farm_View/farm.jpg' %}';
-                } else if (isLiveOn) {
-                    imagePath = '{% static '/Farm_View/farm_live.jpg' %}';
-                }
+            const updateImages = (imageUrls) => {
+                imageContainer.innerHTML = ''; // Clear previous images
 
-                document.getElementById('left-image-top').src = imagePath;
-                document.getElementById('right-image-top').src = imagePath;
-                document.getElementById('left-image-bottom').src = imagePath;
-                document.getElementById('right-image-bottom').src = imagePath;
+                imageUrls.forEach((url) => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Farm Image';
+                    img.className = 'farm-image';
+                    imageContainer.appendChild(img);
+                });
             };
 
             const handleToggleChange = (toggle) => {
@@ -211,7 +242,21 @@
                 rgbCenterToggle.checked = isRGBOn;
                 liveFeedToggle.checked = isLiveOn;
 
-                updateImages(isLeftOn, isRightOn, isRGBOn, isLiveOn);
+                // Adjust image URLs based on toggles
+                const baseUrl = '{% url "farm_images" %}';
+                let imageUrls = [];
+
+                if (isLeftOn) {
+                    imageUrls.push(`${baseUrl}/farm_left_infra.jpg`);
+                } else if (isRightOn) {
+                    imageUrls.push(`${baseUrl}/farm_right_infra.jpg`);
+                } else if (isRGBOn) {
+                    imageUrls.push(`${baseUrl}/farm.jpg`);
+                } else if (isLiveOn) {
+                    imageUrls.push(`${baseUrl}/farm_live.jpg`);
+                }
+
+                updateImages(imageUrls);
             };
 
             leftToggle.addEventListener('change', () => {
@@ -245,14 +290,22 @@
 
                 document.getElementById('current-date').textContent = date;
                 document.getElementById('current-time').textContent = time;
-
                 document.getElementById('calendar-input').value = date;
             };
 
             // Simulate loading images based on the date
             const loadImagesByDate = (date) => {
                 console.log(`Loading images for date: ${date}`);
-                // Add the actual image loading logic here
+                // You can add actual logic to fetch images from your API
+                // For now, let's simulate by loading a predefined set of URLs
+                fetch('{% url "farm_images" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateImages(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching images:', error);
+                    });
             };
 
             calendarInput.addEventListener('change', (event) => {
