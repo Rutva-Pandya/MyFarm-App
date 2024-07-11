@@ -243,17 +243,17 @@
                 liveFeedToggle.checked = isLiveOn;
 
                 // Adjust image URLs based on toggles
-                const baseUrl = '{% url "farm_images" %}';
+                let baseUrl = 'http://127.0.0.1:5000/images';
                 let imageUrls = [];
 
                 if (isLeftOn) {
-                    imageUrls.push(`${baseUrl}/farm_left_infra.jpg`);
+                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/left/20240708-115006.jpg`);
                 } else if (isRightOn) {
-                    imageUrls.push(`${baseUrl}/farm_right_infra.jpg`);
+                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/right/20240708-115006.jpg`);
                 } else if (isRGBOn) {
-                    imageUrls.push(`${baseUrl}/farm.jpg`);
-                } else if (isLiveOn) {
-                    imageUrls.push(`${baseUrl}/farm_live.jpg`);
+                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/center/20240708-115006.jpg`);
+                }   else if (isLiveOn) {
+                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/center/20240708-115006.jpg`);
                 }
 
                 updateImages(imageUrls);
@@ -296,12 +296,12 @@
             // Simulate loading images based on the date
             const loadImagesByDate = (date) => {
                 console.log(`Loading images for date: ${date}`);
-                // You can add actual logic to fetch images from your API
-                // For now, let's simulate by loading a predefined set of URLs
-                fetch('{% url "farm_images" %}')
+                const baseUrl = 'http://127.0.0.1:5000/images';
+                
+                fetch(`${baseUrl}?date=${date}`)
                     .then(response => response.json())
                     .then(data => {
-                        updateImages(data);
+                        updateImages(data); //update with fetched data
                     })
                     .catch(error => {
                         console.error('Error fetching images:', error);
