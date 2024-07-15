@@ -160,7 +160,7 @@
     <main>
         <section id="controls">
             <div id="date-time">
-                <p id="current-date"></p>
+                <p id="current-date">{{time_date}}</p>
                 <p id="current-time"></p>
             </div>
             <div id="calendar">
@@ -196,7 +196,11 @@
         <section id="images">
             <button class="arrow" id="prev">&larr;</button>
             <div class="image-grid" id="image-container">
-                <!-- Images will be dynamically loaded here -->
+                {% if error %}
+                    <p>Error fetching image: {{ error }}</p>
+                {% else %}
+                    <img src="{% static image_url %}" alt="Farm Image">
+                {% endif %}
             </div>
             <button class="arrow" id="next">&rarr;</button>
         </section>
@@ -210,7 +214,7 @@
         </div>
     </footer>
     
-    <script>
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', () => {
             const leftToggle = document.getElementById('infrared-left');
             const rightToggle = document.getElementById('infrared-right');
@@ -219,17 +223,17 @@
             const calendarInput = document.getElementById('calendar-input');
             const imageContainer = document.getElementById('image-container');
 
-            const updateImages = (imageUrls) => {
-                imageContainer.innerHTML = ''; // Clear previous images
+            // const updateImages = (imageUrls) => {
+            //     imageContainer.innerHTML = ''; // Clear previous images
 
-                imageUrls.forEach((url) => {
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.alt = 'Farm Image';
-                    img.className = 'farm-image';
-                    imageContainer.appendChild(img);
-                });
-            };
+            //     imageUrls.forEach((url) => {
+            //         const img = document.createElement('img');
+            //         img.src = url;
+            //         img.alt = 'Farm Image';
+            //         img.className = 'farm-image';
+            //         imageContainer.appendChild(img);
+            //     });
+            // };
 
             const handleToggleChange = (toggle) => {
                 const isLeftOn = toggle === 'left';
@@ -242,94 +246,118 @@
                 rgbCenterToggle.checked = isRGBOn;
                 liveFeedToggle.checked = isLiveOn;
 
-                // Adjust image URLs based on toggles
-                let baseUrl = 'http://127.0.0.1:5000/images';
-                let imageUrls = [];
-
-                if (isLeftOn) {
-                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/left/20240708-115006.jpg`);
-                } else if (isRightOn) {
-                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/right/20240708-115006.jpg`);
-                } else if (isRGBOn) {
-                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/center/20240708-115006.jpg`);
-                }   else if (isLiveOn) {
-                    imageUrls.push(`${baseUrl}/Seventh%20Leaf/2024-07-08/farmy-1/images/top_left/center/20240708-115006.jpg`);
-                }
-
-                updateImages(imageUrls);
+                loadImagesByDateAndType(calendarInput.value, toggle);
             };
-
-            leftToggle.addEventListener('change', () => {
-                if (leftToggle.checked) {
-                    handleToggleChange('left');
-                }
-            });
-
-            rightToggle.addEventListener('change', () => {
-                if (rightToggle.checked) {
-                    handleToggleChange('right');
-                }
-            });
-
-            rgbCenterToggle.addEventListener('change', () => {
-                if (rgbCenterToggle.checked) {
-                    handleToggleChange('rgb');
-                }
-            });
-
-            liveFeedToggle.addEventListener('change', () => {
-                if (liveFeedToggle.checked) {
-                    handleToggleChange('live');
-                }
-            });
 
             const updateDateTime = () => {
                 const now = new Date();
                 const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
                 const time = now.toTimeString().split(' ')[0]; // HH:MM:SS
-
+                
                 document.getElementById('current-date').textContent = date;
                 document.getElementById('current-time').textContent = time;
                 document.getElementById('calendar-input').value = date;
             };
 
-            // Simulate loading images based on the date
-            const loadImagesByDate = (date) => {
-                console.log(`Loading images for date: ${date}`);
-                const baseUrl = 'http://127.0.0.1:5000/images';
-                
-                fetch(`${baseUrl}?date=${date}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        updateImages(data); //update with fetched data
-                    })
-                    .catch(error => {
-                        console.error('Error fetching images:', error);
-                    });
+            // Fetch image URLs from API and process them
+            const fetchImageUrls = async () => {
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/images');
+                    const imageUrls = await response.json();
+                    return processImageUrls(imageUrls);
+                } catch (error) {
+                    console.error("Error fetching images:", error);
+                    return {};
+                }
             };
 
+            // Extract date and type information from the URL
+            const extractInfo = (url) => {
+                const regex = /\/images\/([^/]+)\/(\d{4}-\d{2}-\d{2})\/([^/]+)\/images\/([^/]+)\/([^/]+)\/([^/]+\.jpg)/;
+                const match = url.match(regex);
+                if (match) {
+                    return {
+                        mission: match[1],
+                        date: match[2],
+                        robot: match[3],
+                        position: match[4],
+                        type: match[5].includes('left') ? 'left' : (match[5].includes('right') ? 'right' : 'rgb'),
+                        url: url
+                    };
+                }
+                return null;
+            };
+
+            // Process and sort image URLs
+            const processImageUrls = (imageUrls) => {
+                const images = imageUrls.map(extractInfo).filter(Boolean);
+                images.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                const sortedImages = {};
+                images.forEach(image => {
+                    if (!sortedImages[image.date]) {
+                        sortedImages[image.date] = {
+                            rgb: [],
+                            left: [],
+                            right: []
+                        };
+                    }
+                    sortedImages[image.date][image.type].push(image.url);
+                });
+                return sortedImages;
+            };
+
+            // Load images based on the selected date and type
+            const loadImagesByDateAndType = async (date, type) => {
+                const sortedImages = await fetchImageUrls();
+                const imagesToShow = sortedImages[date] ? sortedImages[date][type] : [];
+                updateImages(imagesToShow);
+            };
+
+            const handleCheckboxChange = (event) => {
+                const { id } = event.target;
+                if (id === 'rgb-center') {
+                    handleToggleChange('rgb');
+                } else if (id === 'infrared-left') {
+                    handleToggleChange('left');
+                } else if (id === 'infrared-right') {
+                    handleToggleChange('right');
+                } else if (id === 'live-feed') {
+                    handleToggleChange('live');
+                }
+            };
+
+            rgbCenterToggle.addEventListener('change', handleCheckboxChange);
+            leftToggle.addEventListener('change', handleCheckboxChange);
+            rightToggle.addEventListener('change', handleCheckboxChange);
+            liveFeedToggle.addEventListener('change', handleCheckboxChange);
+
             calendarInput.addEventListener('change', (event) => {
-                loadImagesByDate(event.target.value);
+                const selectedToggle = document.querySelector('input[name="toggle"]:checked').value;
+                loadImagesByDateAndType(event.target.value, selectedToggle);
             });
 
             document.getElementById('prev').addEventListener('click', () => {
                 const currentDate = new Date(calendarInput.value);
                 currentDate.setDate(currentDate.getDate() - 1);
                 calendarInput.value = currentDate.toISOString().split('T')[0];
-                loadImagesByDate(calendarInput.value);
+                const selectedToggle = document.querySelector('input[name="toggle"]:checked').value;
+                loadImagesByDateAndType(calendarInput.value, selectedToggle);
             });
 
             document.getElementById('next').addEventListener('click', () => {
                 const currentDate = new Date(calendarInput.value);
                 currentDate.setDate(currentDate.getDate() + 1);
                 calendarInput.value = currentDate.toISOString().split('T')[0];
-                loadImagesByDate(calendarInput.value);
+                const selectedToggle = document.querySelector('input[name="toggle"]:checked').value;
+                loadImagesByDateAndType(calendarInput.value, selectedToggle);
             });
 
             updateDateTime();
             handleToggleChange('rgb'); // Set initial images to RGB Center and toggle it on
         });
-    </script>
+        </script> -->
+        
 </body>
 
 </html>
