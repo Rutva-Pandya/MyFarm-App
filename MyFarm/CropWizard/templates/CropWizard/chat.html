@@ -55,12 +55,13 @@
             border-top: 1px solid #E84A27;
         }
 
-        .input-box > input[type="text"], .input-box > input[type="url"] {
+        .input-box > input[type="text"], .input-box > input[type="url"], .input-box > input[type="file"] {
             flex-grow: 1;
             margin-right: 10px;
             padding: 10px;
             border: 1px solid #E84A27;
             border-radius: 5px;
+            transition: flex-grow 0.3s ease;
         }
 
         .input-box > button {
@@ -108,6 +109,27 @@
             border-radius: 10px;
         }
 
+        .image-preview-container {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .image-preview {
+            max-width: 150px;
+            max-height: 150px;
+            margin: 5px 0;
+            border-radius: 10px;
+            transition: margin-right 0.3s ease, max-width 0.3s ease;
+        }
+
+        .text-input-expanded {
+            flex-grow: 1.5;
+        }
+
+        .text-input-normal {
+            flex-grow: 1;
+        }
+
     </style>
     {% load static %}
 </head>
@@ -120,51 +142,103 @@
         <!-- Chat messages will appear here -->
     </div>
     <div class="input-box">
-        <input type="text" id="text-input" placeholder="Type a message...">
-        <input type="url" id="image-url-input" placeholder="Image URL (optional)">
+        <input type="text" id="text-input" class="text-input-normal" placeholder="Type a message...">
+        <div class="image-preview-container">
+            <img id="image-preview" class="image-preview" src="" alt="Image Preview" style="display: none;">
+        </div>
+        <input type="file" id="image-input" accept="image/*" style="display: none;" onchange="previewImage()">
+        <button id="upload-button" onclick="document.getElementById('image-input').click();">Upload Image</button>
         <button onclick="sendQuery()">Send</button>
     </div>
     <script>
+        function previewImage() {
+            const imageInput = document.getElementById('image-input');
+            const imagePreview = document.getElementById('image-preview');
+            const imagePreviewContainer = document.querySelector('.image-preview-container');
+
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    imagePreviewContainer.style.display = 'flex';
+                    document.getElementById('text-input').classList.remove('text-input-normal');
+                    document.getElementById('text-input').classList.add('text-input-expanded');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function sendQuery() {
             const textInput = document.getElementById('text-input').value;
-            const imageUrlInput = document.getElementById('image-url-input').value;
+            const imageInput = document.getElementById('image-input').files[0];
             const chatContainer = document.getElementById('chat-container');
 
-            if (!textInput && !imageUrlInput) {
-                alert("Please enter a message or provide an image URL.");
+            if (!textInput && !imageInput) {
+                alert("Please enter a message or upload an image.");
                 return;
             }
 
             // Append user message to chat container
-            if (imageUrlInput) {
-                const userImageMessage = document.createElement('img');
-                userImageMessage.className = 'image-message';
-                userImageMessage.src = imageUrlInput;
-                chatContainer.appendChild(userImageMessage);
-            }
-            
-            if (textInput) {
+            if (imageInput) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const userImageContainer = document.createElement('div');
+                    userImageContainer.className = 'image-message';
+                    const userImageMessage = document.createElement('img');
+                    userImageMessage.src = e.target.result;
+                    userImageMessage.alt = 'Uploaded Image';
+                    userImageMessage.style.maxWidth = '150px';
+                    userImageMessage.style.maxHeight = '150px';
+                    userImageContainer.appendChild(userImageMessage);
+                    chatContainer.appendChild(userImageContainer);
+
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'chat-message user-message';
+                    userMessage.textContent = textInput;
+                    chatContainer.appendChild(userMessage);
+
+                    sendToServer(textInput, imageInput);
+                };
+                reader.readAsDataURL(imageInput);
+            } else {
                 const userMessage = document.createElement('div');
                 userMessage.className = 'chat-message user-message';
                 userMessage.textContent = textInput;
                 chatContainer.appendChild(userMessage);
+
+                sendToServer(textInput, null);
             }
 
-            // Send AJAX request to server
+            // Reset text input style
+            document.getElementById('text-input').classList.remove('text-input-expanded');
+            document.getElementById('text-input').classList.add('text-input-normal');
+
+            // Clear input fields
+            document.getElementById('text-input').value = '';
+            document.getElementById('image-input').value = '';
+            document.getElementById('image-preview').style.display = 'none';
+            document.querySelector('.image-preview-container').style.display = 'none';
+        }
+
+        function sendToServer(text, imageFile) {
+            const formData = new FormData();
+            formData.append('text', text);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
             fetch('/cropwizard/ask_cropwizard/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
-                body: new URLSearchParams({
-                    'text': textInput,
-                    'image_url': imageUrlInput
-                })
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
-                // Append wizard response to chat container
+                const chatContainer = document.getElementById('chat-container');
                 const wizardMessage = document.createElement('div');
                 wizardMessage.className = 'chat-message wizard-message';
                 wizardMessage.textContent = data.message;
@@ -172,10 +246,6 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             })
             .catch(error => console.error('Error:', error));
-            
-            // Clear input fields
-            document.getElementById('text-input').value = '';
-            document.getElementById('image-url-input').value = '';
         }
     </script>
 </body>

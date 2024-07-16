@@ -1,9 +1,10 @@
 import logging
 import requests
-from openai import AzureOpenAI 
+from openai import AzureOpenAI
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 import os
 
 logger = logging.getLogger(__name__)
@@ -12,11 +13,10 @@ logger = logging.getLogger(__name__)
 CROPWIZARD_API_KEY = os.getenv('CROPWIZARD_API')
 OPENAI_API_KEY = os.getenv('AZURE_OPENAI_API_KEY')
 client = AzureOpenAI(
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),  
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
     api_version= "2023-12-01-preview",
     azure_endpoint = "https://gpt-4-uiuc-chat-east-us-2.openai.azure.com/"
 )
-
 
 def chat(request):
     return render(request, 'CropWizard/chat.html')
@@ -27,8 +27,20 @@ def ask_cropwizard(request):
         text_input = request.POST.get('text', '')
         image_url_input = request.POST.get('image_url', '')
 
-        if not text_input and not image_url_input:
+        # Handle image file upload
+        image_file = request.FILES.get('image')
+
+        if not text_input and not image_url_input and not image_file:
             return JsonResponse({"error": "No valid input provided."}, status=400)
+
+        # Save the uploaded image if it exists
+        image_url = ''
+        if image_file:
+            image_path = os.path.join(settings.MEDIA_ROOT, image_file.name)
+            with open(image_path, 'wb') as f:
+                for chunk in image_file.chunks():
+                    f.write(chunk)
+            image_url = os.path.join(settings.MEDIA_URL, image_file.name)
 
         url = "https://uiuc.chat/api/chat-api/chat"
         headers = {
@@ -42,21 +54,21 @@ def ask_cropwizard(request):
             }
         ]
 
-        if image_url_input:
+        if image_url:
             messages.append({
                 "role": "user",
                 "content": [
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": image_url_input
+                            "url": image_url
                         }
                     }
                 ]
             })
 
         if text_input:
-            if image_url_input:
+            if image_url:
                 messages[-1]["content"].append({
                     "type": "text",
                     "text": text_input
