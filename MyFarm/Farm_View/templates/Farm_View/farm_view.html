@@ -196,11 +196,9 @@
         <section id="images">
             <button class="arrow" id="prev">&larr;</button>
             <div class="image-grid" id="image-container">
-                {% if error %}
-                    <p>Error fetching image: {{ error }}</p>
-                {% else %}
-                    <img src="{% static image_url %}" alt="Farm Image">
-                {% endif %}
+                {% with image_url="https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg" %}
+                    <img src="{{ image_url }}" alt="Farm Image">
+                {% endwith %}
             </div>
             <button class="arrow" id="next">&rarr;</button>
         </section>

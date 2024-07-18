@@ -9,14 +9,7 @@ import os
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-CROPWIZARD_API_KEY = os.getenv('CROPWIZARD_API')
-OPENAI_API_KEY = os.getenv('AZURE_OPENAI_API_KEY')
-client = AzureOpenAI(
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),  
-    api_version= "2023-12-01-preview",
-    azure_endpoint = "https://gpt-4-uiuc-chat-east-us-2.openai.azure.com/"
-)
-
+CROPWIZARD_API_KEY = "uc_5806ac979cae4911a920231ca15abad7"
 
 def chat(request):
     return render(request, 'CropWizard/chat.html')
@@ -30,6 +23,7 @@ def ask_cropwizard(request):
         if not text_input and not image_url_input:
             return JsonResponse({"error": "No valid input provided."}, status=400)
 
+        # url = "https://uiuc-chat-git-refactortoopenaimessagefix-kastandays-projects.vercel.app/api/chat-api/chat"
         url = "https://uiuc.chat/api/chat-api/chat"
         headers = {
             'Content-Type': 'application/json'
@@ -73,9 +67,8 @@ def ask_cropwizard(request):
                 })
 
         payload = {
-            "model": "gpt-4-vision-preview",
+            "model": "gpt-4o",
             "messages": messages,
-            "openai_key": OPENAI_API_KEY,
             "temperature": 0.1,
             "course_name": "cropwizard-1.5",
             "stream": False,

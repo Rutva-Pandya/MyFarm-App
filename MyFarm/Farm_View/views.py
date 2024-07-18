@@ -1,115 +1,79 @@
 from django.shortcuts import render
-from django.http import JsonResponse
-from datetime import datetime
-
-from django.shortcuts import render
-import requests
-import datetime
-
-import logging
-
-logger = logging.getLogger(__name__)
 
 def home(request):
-    image_api_url = 'http://127.0.0.1:5000/images/Seventh%20Leaf/2024-07-08/farmy-1/images/top_right/left/20240708-115006.jpg'
+    # List of image URLs
+    urls = [
+        "https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg",
+        "https://images.pexels.com/photos/3573357/pexels-photo-3573357.jpeg",
+        # Add more URLs as needed
+    ]
+    
+    return render(request, 'farm_view.html', {'urls': urls})
 
-    try:
-        # Fetch image data from API
-        response = requests.get(image_api_url)
-        response.raise_for_status()  # Raise exception for 4xx/5xx errors
+# from django.shortcuts import render
+# from django.http import JsonResponse
+# from datetime import datetime
 
-        # Get the image URL from the response (assuming JSON response)
-        image_data = response.json()
-        image_url = image_data['url']
+# from django.shortcuts import render
+# import requests
+# import datetime
+
+# import logging
+
+# logger = logging.getLogger(__name__)
+
+# # def home(request):
+# #     image_api_url = 'http://127.0.0.1:5000/images/Seventh%20Leaf/2024-07-08/farmy-1/images/top_right/left/20240708-115006.jpg'
+
+# #     try:
+# #         # # Fetch image data from API
+# #         # response = requests.get(image_api_url)
+# #         # response.raise_for_status()  # Raise exception for 4xx/5xx errors
+
+# #         # # Get the image URL from the response (assuming JSON response)
+# #         # image_data = response.json()
+# #         # image_url = image_data.get('url', '')  # Ensure 'url' key exists
+
+# #         # print("Image URL:", image_url)  # Debug print
+# #         image_url = 'https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg'
+
+# #         # Pass the image URL to the template for rendering
+# #         return render(request, 'Farm_View/farm_view.html', {'image_url': image_url})
+
+# #     except requests.exceptions.RequestException as e:
+# #         # Handle request exceptions (e.g., network errors)
+# #         return render(request, 'Farm_View/farm_view.html', {'error': str(e)})
 
 
-        # Pass the image URL to the template for rendering
-        return render(request, 'Farm_View/farm_view.html', {'image_url': image_url})
-
-    except requests.exceptions.RequestException as e:
-        # Handle request exceptions (e.g., network errors)
-        # return render(request, 'Farm_View/farm_view.html', {'error': str(e)})
-        return None
-
-    # return render(request, 'Farm_View/farm_view.html')
+# # from django.shortcuts import render 
 
 # def home(request):
-#     image_api_url = "http://127.0.0.1:5000/images/Seventh Leaf/2024-07-08/farmy-1/images/top_right/left/20240708-115006.jpg"
+#     # Specific image URL for testing
+#     url = ['https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg']
 
-#     try:
-#         # Fetch image data from API
-#         response = requests.get(image_api_url)
-#         response.raise_for_status()  # Raise exception for 4xx/5xx errors
+#     # Pass the image URL to the template for rendering
+#     return render(request, 'MyFarm/Farm_View/templates/Farm_View/farm_view.html', {'url': url})
 
-#         # Assuming JSON response containing the image URL
-#         image_data = response.json()
-#         image_url = image_data['url']
-#         print("Image Url: ", image_url)
 
-#         # Pass the image URL to the template for rendering
-#         return render(request, 'Farm_View/farm_view.html', {'image_url': image_url})
+# # def home(request):
+# #     image_api_url = 'http://127.0.0.1:5000/images/Seventh%20Leaf/2024-07-08/farmy-1/images/top_right/left/20240708-115006.jpg'
 
-#     except requests.exceptions.RequestException as e:
-#         # Handle request exceptions (e.g., network errors)
-#         # return render(request, 'Farm_View/farm_view.html', {'error': str(e)})
-#         return None
+# #     try:
+# #         # Fetch image data from API
+# #         response = requests.get(image_api_url)
+# #         response.raise_for_status()  # Raise exception for 4xx/5xx errors
 
-# def farm_view(request):
-#     image_api_url = "http://127.0.0.1:5000/images/Seventh%20Leaf/2024-07-08/farmy-1/images/top_right/left/20240708-115006.jpg"
-#     time_date  = datetime.datetime()
-#     try:
-#         # Fetch image data from API
-#         response = requests.get(image_api_url)
-#         response.raise_for_status()  # Raise exception for 4xx/5xx errors
+# #         # Get the image URL from the response (assuming JSON response)
+# #         image_data = response.json()
+# #         image_url = image_data['url']
 
-#         # Assuming JSON response containing the image URL
-#         image_data = response.json()
-#         image_url = image_data['url']
-#         print("Image Url: ", image_url)
+# #         print(image_url)
 
-#         # Pass the image URL to the template for rendering
-#         return render(request, 'Farm_View/farm_view.html', {'image_url': image_url}, {"time_date":time_date})
+# #         # Pass the image URL to the template for rendering
+# #         return render(request, 'Farm_View/farm_view.html', {'image_url': image_url})
 
-#     except requests.exceptions.RequestException as e:
-#         # Handle request exceptions (e.g., network errors)
-#         return render(request, 'Farm_View/farm_view.html', {'error': str(e)})
+# #     except requests.exceptions.RequestException as e:
+# #         # Handle request exceptions (e.g., network errors)
+# #         return render(request, 'Farm_View/farm_view.html', {'error': str(e)})
+# #         # return None
 
-# def get_images(request):
-#     date = request.GET.get('date', datetime.today().strftime('%Y-%m-%d'))
-#     parts = request.GET.getlist('part')
-
-#     images = []
-
-#     if 'rgb_center' in parts:
-#         images.append('/path/to/rgb_center_image_' + date + '.jpg')
-#     if 'infrared_left' in parts:
-#         images.append('/path/to/infrared_left_image_' + date + '.jpg')
-#     if 'infrared_right' in parts:
-#         images.append('/path/to/infrared_right_image_' + date + '.jpg')
-#     if 'live_feed' in parts:
-#         images.append('/path/to/live_feed_image_' + date + '.jpg')
-
-#     print(request)
-
-#     return JsonResponse(images, safe=False)
-    # return None
-
-# def fetch_image(request):
-#     # Example URL of the image API
-#     image_api_url = '127.0.0.1:5000/images'
-
-#     try:
-#         # Fetch image data from API
-#         response = requests.get(image_api_url)
-#         response.raise_for_status()  # Raise exception for 4xx/5xx errors
-
-#         # Get the image URL from the response (assuming JSON response)
-#         image_data = response.json()
-#         image_url = image_data['url']
-
-#         # Pass the image URL to the template for rendering
-#         return render(request, 'app/fetch_image.html', {'image_url': image_url})
-
-#     except requests.exceptions.RequestException as e:
-#         # Handle request exceptions (e.g., network errors)
-#         return render(request, 'app/fetch_image.html', {'error': str(e)})
