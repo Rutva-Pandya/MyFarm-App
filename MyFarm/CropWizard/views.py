@@ -9,7 +9,7 @@ import os
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-CROPWIZARD_API_KEY = "uc_5806ac979cae4911a920231ca15abad7"
+CROPWIZARD_API_KEY = "YOUR_API_KEY"
 
 def chat(request):
     return render(request, 'CropWizard/chat.html')

@@ -1,13 +1,4 @@
-import os
 from django.shortcuts import render
-from openai import AzureOpenAI
-
-OPENAI_API_KEY = os.getenv('AZURE_OPENAI_API_KEY')
-client = AzureOpenAI(
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version= "2023-12-01-preview",
-    azure_endpoint = "https://gpt-4-uiuc-chat-east-us-2.openai.azure.com/"
-)
 
 # Create your views here.
 def home(request):
